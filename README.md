@@ -106,153 +106,44 @@ if start == "start":
 verilog 코드 
 TOP모듈
 ```
-module tra(
-input wire clk, 
-input wire rst_n,
-output reg [1:0] car_light,
-output reg [1:0] hmn_light
-);
+`timescale 1ns / 1ps
 
-localparam CAR_RED = 2'b00;
-localparam CAR_GREEN = 2'b01;
-localparam CAR_YELLOW = 2'b10;
-localparam CAR_LEFT = 2'b11;
+module tb_tra;
+    reg clk;
+    reg rst_n;
+    
+    wire [1:0] ns_car, ns_hmn; // 남북 신호선
+    wire [1:0] ew_car, ew_hmn; // 동서 신호선
+    
+    initial clk = 0;
+    always #5 clk = ~clk;
+    
+    tra #( .MODE(0) ) u_ns (
+        .clk(clk),
+        .rst_n(rst_n),
+        .car_light(ns_car), 
+        .hmn_light(ns_hmn)
+    );
+    
+    tra #( .MODE(1) ) u_ew (
+        .clk(clk),
+        .rst_n(rst_n),
+        .car_light(ew_car), 
+        .hmn_light(ew_hmn)
+    );
+    
+    initial begin
+    rst_n = 0;
+        #20;
+        rst_n = 1;
 
-localparam HMN_RED = 2'b00;
-localparam HMN_GREEN = 2'b01;
-localparam HMN_BLINK = 2'b10;
-
-parameter LIGHT=0;
-reg [6:0] cycle;
-
-always @(posedge clk) begin
-	if (!rst_n) begin
-		cycle <= 0;
-	end
-	else begin
-		if(cycle >= 68) begin
-			cycle <= 0;
-		end
-		else begin
-			cycle <= cycle + 1;
-		end
-	end
-end
-
-always @(*) begin
-	car_light=0;
-	hmn_light=0;
-	
-	if (cycle >= 1 && cycle <= 14) begin
-		if (LIGHT == 0) begin
-			car_light = CAR_GREEN;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_RED;
-			hmn_light = HMN_GREEN;
-		end
-	end
-	
-	else if (cycle >= 15 && cycle <= 20) begin
-		if (LIGHT == 0) begin
-			car_light = CAR_GREEN;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_RED;
-			hmn_light = HMN_BLINK;
-		end
-	end
-
-	else if (cycle >= 21 && cycle <= 22) begin
-		if (LIGHT == 0) begin
-			car_light = CAR_YELLOW;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-	end
-	
-	else if (cycle >= 23 && cycle <= 32) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_LEFT;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 33 && cycle <= 34) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_YELLOW;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 35 && cycle <= 48) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_RED;
-			hmn_light = HMN_GREEN;
-		end
-		else begin
-			car_light = CAR_GREEN;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 49 && cycle <= 54) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_RED;
-			hmn_light = HMN_BLINK;
-		end
-		else begin
-			car_light = CAR_GREEN;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 55 && cycle <= 56) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_YELLOW;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 57 && cycle <= 66) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_LEFT;
-			hmn_light = HMN_RED;
-		end
-	end
-
-	else if (cycle >= 67 && cycle <= 68) begin
-		if(LIGHT == 0) begin
-			car_light = CAR_RED;
-			hmn_light = HMN_RED;
-		end
-		else begin
-			car_light = CAR_YELLOW;
-			hmn_light = HMN_RED;
-		end
-	end
-end
+        $monitor("Time: %t | Cycle: %d | NS_Car: %b | EW_Car: %b", 
+                 $time, u_ns.cycle, ns_car, ew_car);
+                 
+        #1500;
+        $finish;
+    end
 
 endmodule
+    
 ```
