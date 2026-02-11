@@ -1,168 +1,104 @@
 # traffic_monitor
 ### python 코드
 
-```v
-module tra(
-    input wire clk, 
-    input wire rst_n, 
-    input wire mode_number, 
-    output reg [1:0] car_light, 
-    output reg [1:0] hmn_light
-);
-    localparam CAR_RED = 2'b00, CAR_GREEN = 2'b01, CAR_YELLOW = 2'b10, CAR_LEFT = 2'b11;
-    localparam HMN_RED = 2'b00, HMN_GREEN = 2'b01, HMN_BLINK  = 2'b10;
+```python
+start=input("start 입력하면 시작:")
 
-    reg [6:0] cycle;
+if start == "start":
+    mode = int(input('mode를 선택하세요.\n 1: normal mode \n 2: monitor mode\n'))
 
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            cycle <= 0;
-        end
-        else begin
-            if (cycle >= 68) 
-                cycle <= 0;
-            else
-                cycle <= cycle + 1;
-        end
-    end
+    cycle = 0
+    full_cycle = 0
 
-    always @(*) begin
-        car_light = 2'b00;
-        hmn_light = 2'b00;
+    if mode == 1:
+        print('nomal mode')
+        full_cycle = 68
 
-        if (cycle >= 1 && cycle <= 14) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_GREEN; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_RED; hmn_light = HMN_GREEN;
-            end
-        end
-        else if (cycle >= 15 && cycle <= 20) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_GREEN; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_RED; hmn_light = HMN_BLINK;
-            end
-        end
-        else if (cycle >= 21 && cycle <= 22) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_YELLOW; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 23 && cycle <= 32) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_LEFT; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 33 && cycle <= 34) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_YELLOW; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 35 && cycle <= 48) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_RED; hmn_light = HMN_GREEN;
-            end
-            else begin
-                car_light = CAR_GREEN; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 49 && cycle <= 54) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_RED; hmn_light = HMN_BLINK;
-            end
-            else begin
-                car_light = CAR_GREEN; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 55 && cycle <= 56) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_YELLOW; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 57 && cycle <= 66) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_LEFT; hmn_light = HMN_RED;
-            end
-        end
-        else if (cycle >= 67 && cycle <= 68) begin
-            if (mode_number == 1'b0) begin
-                car_light = CAR_RED; hmn_light = HMN_RED;
-            end
-            else begin
-                car_light = CAR_YELLOW; hmn_light = HMN_RED;
-            end
-        end
-    end
-endmodule 
+    elif mode == 2:
+        print('monitor mode')
+        cycle= int(input('cycle number:'))
+        full_cycle = 1
 
-module top (
-    input wire clk, 
-    input wire rst_n, 
-    output wire [1:0] n_car, n_ped, s_car, s_ped, e_car, e_ped, w_car, w_ped
-);
-    tra u_north (.clk(clk), .rst_n(rst_n), .mode_number(1'b0), .car_light(n_car), .hmn_light(n_ped));
-    tra u_south (.clk(clk), .rst_n(rst_n), .mode_number(1'b0), .car_light(s_car), .hmn_light(s_ped));
-    tra u_east  (.clk(clk), .rst_n(rst_n), .mode_number(1'b1), .car_light(e_car), .hmn_light(e_ped));
-    tra u_west  (.clk(clk), .rst_n(rst_n), .mode_number(1'b1), .car_light(w_car), .hmn_light(w_ped));
-endmodule
+    for i in range (full_cycle):
+        if mode == 1:
+            cycle = i + 1
 
-module top (
-    input wire clk, 
-    input wire rst_n, 
-    output wire [1:0] n_car, n_ped, s_car, s_ped, e_car, e_ped, w_car, w_ped
-);
-    tra u_north (.clk(clk), .rst_n(rst_n), .mode_number(1'b0), .car_light(n_car), .hmn_light(n_ped));
-    tra u_south (.clk(clk), .rst_n(rst_n), .mode_number(1'b0), .car_light(s_car), .hmn_light(s_ped));
-    tra u_east  (.clk(clk), .rst_n(rst_n), .mode_number(1'b1), .car_light(e_car), .hmn_light(e_ped));
-    tra u_west  (.clk(clk), .rst_n(rst_n), .mode_number(1'b1), .car_light(w_car), .hmn_light(w_ped));
-endmodule
+        while cycle > 68:
+            cycle = cycle % 68
 
-`timescale 1ns / 1ps
+        if 1 <= cycle <= 14:
+            car_clrstate1 = "green"
+            human_clrstate1 = "red"
+            car_clrstate2 = "red"
+            human_clrstate2 = "green"
 
-module tb_top_normal;
-    reg clk;
-    reg rst_n;
+        elif 15 <= cycle <= 20:
+            car_clrstate1 = "green"
+            human_clrstate1 = "red"
+            car_clrstate2 = "red"
+            human_clrstate2 = "blink"
 
-    wire [1:0] n_car, n_ped, s_car, s_ped, e_car, e_ped, w_car, w_ped;
+        elif 21 <= cycle <=22:
+            car_clrstate1 = "yellow"
+            human_clrstate1 = "red"
+            car_clrstate2 = "red"
+            human_clrstate2 = "red"
 
-    initial clk = 0;
-    always #5 clk = ~clk;
+        elif 23 <= cycle <= 32:
+            car_clrstate1 = "left"
+            human_clrstate1 = "red"
+            car_clrstate2 = "red"
+            human_clrstate2 = "red"   
 
-    top u_traffic_system (
-        .clk(clk), .rst_n(rst_n),
-        .n_car(n_car), .n_ped(n_ped), .s_car(s_car), .s_ped(s_ped),
-        .e_car(e_car), .e_ped(e_ped), .w_car(w_car), .w_ped(w_ped)
-    );
+        elif 33 <= cycle <= 34:
+            car_clrstate1 = "yellow"
+            human_clrstate1 = "red"
+            car_clrstate2 = "red"
+            human_clrstate2 = "red"
+    
+        elif 35 <= cycle <=48:
+            car_clrstate1 = "red"
+            human_clrstate1 = "green"
+            car_clrstate2 = "green"
+            human_clrstate2 = "red"
 
-    initial begin
-        $display("===== [NORMAL MODE] 사거리 전체 흐름 시뮬레이션 시작 =====");
-        rst_n = 0; #20; rst_n = 1;
+        elif 49 <= cycle <= 54:
+            car_clrstate1 = "red"
+            human_clrstate1 = "blink"
+            car_clrstate2 = "green"
+            human_clrstate2 = "red"
 
-        $monitor(" Cycle:%3d | N_Car:%b | E_Car:%b", 
-                 $time, u_traffic_system.u_north.cycle, n_car, e_car);
+        elif 55 <= cycle <= 56:
+            car_clrstate1 = "red"
+            human_clrstate1 = "red"
+            car_clrstate2 = "yellow"
+            human_clrstate2 = "red"
 
-        #1500;
+        elif 57 <= cycle <= 66:
+            car_clrstate1 = "red"
+            human_clrstate1 = "red"
+            car_clrstate2 = "left"
+            human_clrstate2 = "red"
+    
+        elif 67 <= cycle <= 68:
+            car_clrstate1 = "red"
+            human_clrstate1 = "red"
+            car_clrstate2 = "yellow"
+            human_clrstate2 = "red" 
+
+        if mode == 1:
+            print(cycle,"cycle: ")
+            print("  NORTH: [car: ",car_clrstate1,"],   [human: ",human_clrstate1,"]")
+            print("  WEST:  [car: ",car_clrstate2,"],   [human: ",human_clrstate2,"]")
+            print("  SOUTH: [car: ",car_clrstate1,"],   [human: ",human_clrstate1,"]")
+            print("  EAST:  [car: ",car_clrstate2,"],   [human: ",human_clrstate2,"]\n")
+
         
-        $display("===== [NORMAL MODE] 시뮬레이션 종료 =====");
-        $finish;
-    end
-endmodule
+        elif mode == 2:
+            if cycle == cycle:
+                print(cycle,"cycle: ")
+                print("  NORTH: [car: ",car_clrstate1,"],   [human: ",human_clrstate1,"]")
+                print("  WEST:  [car: ",car_clrstate2,"],   [human: ",human_clrstate2,"]")
+                print("  SOUTH: [car: ",car_clrstate1,"],   [human: ",human_clrstate1,"]")
+                print("  EAST:  [car: ",car_clrstate2,"],   [human: ",human_clrstate2,"]\n")
 ```
