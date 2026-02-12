@@ -71,8 +71,6 @@ module tb_traffic_nomal;
     );
 
     initial begin
-        $display("[NORMAL MODE]");
-        $display(" Cyc | NC NP | SC SP | EC EP | WC WP");
         rst_n = 0; i_start = 0; #20; 
         rst_n = 1; i_start = 1;
         
